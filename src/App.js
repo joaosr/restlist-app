@@ -1,26 +1,55 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import RestaurantList from './components/RestaurantList';
+import Login from './components/Login';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends React.Component {
+
+  constructor(props){
+    super(props)
+    this.state = {
+      restaurants: [],
+      loggedin: false
+    };
+
+    this.restaurantUpdate = this.restaurantUpdate.bind(this)
+  }
+
+  async componentDidMount() {
+    try {
+      const res = await fetch('http://127.0.0.1:8000/api/v1/restaurants/');
+      const restaurants = await res.json();
+      this.setState({
+        restaurants: restaurants.results
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  restaurantUpdate(restaurant){
+       const restaurants = this.state.restaurants.map(r => { return r.id === restaurant.id ? restaurant : r })
+       this.setState({
+         restaurants: restaurants,
+       })
+  }
+
+  render() {
+    return (
+
+      <div className="App">
+        <Login updateLoginStatus={e => {
+          this.setState({
+            loggedin: e,
+          });
+        }}/>
+        <RestaurantList
+          restaurants={this.state.restaurants}
+          loggedin={this.state.loggedin}
+          restaurantUpdate={this.restaurantUpdate}
+        />
+      </div>
+    );
+  }
+
 }
-
-export default App;
