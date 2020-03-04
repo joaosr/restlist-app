@@ -28,6 +28,7 @@ export default class App extends React.Component {
   }
 
   restaurantUpdate(restaurant){
+       debugger;
        const restaurants = this.state.restaurants.map(r => { return r.id === restaurant.id ? restaurant : r })
        this.setState({
          restaurants: restaurants,
